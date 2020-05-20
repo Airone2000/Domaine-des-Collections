@@ -1,0 +1,17 @@
+version: '3'
+services:
+  mysql5730:
+    image: mysql:5.7.30
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: adoccia
+    ports:
+    - 3306
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - mysql5730
+    environment:
+      PMA_HOST: mysql5730
+    ports:
+    - 8080:80
