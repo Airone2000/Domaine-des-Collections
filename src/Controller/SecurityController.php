@@ -24,9 +24,9 @@ class SecurityController extends AbstractController
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('target_path');
-        // }
+        if ($this->getUser()) {
+             return $this->redirectToRoute('app_homepage');
+        }
 
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
@@ -49,6 +49,10 @@ class SecurityController extends AbstractController
      */
     public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, UsernamePasswordAuthenticator $authenticator): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_homepage');
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user, [
             'validation_groups' => 'User:Register'
