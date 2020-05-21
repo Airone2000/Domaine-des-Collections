@@ -17,6 +17,18 @@ services:
       PMA_HOST: mysql5730
     ports:
     - 8080:80
+  rabbitmq:
+    image: rabbitmq:latest
+    volumes:
+    - rabbitmq_data:/var/lib/rabbitmq
+  rabbitmqctl:
+    image: rabbitmq:3.8-management
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - 8888:15672
 
 volumes:
   db_data:
+  rabbitmq_data:
