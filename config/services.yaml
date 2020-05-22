@@ -25,3 +25,12 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # Add custom transport factory for mailjet
+    # Why mailjet ? Low cost, interesting free trial (6000/month ; 200/days)
+    # 7,95€ for 30 000 emails/month ; no daily limit
+    App\Mailer\Transport\Mailjet\MailjetTransportFactory:
+        tags:
+            -
+                name: mailer.transport_factory
+
