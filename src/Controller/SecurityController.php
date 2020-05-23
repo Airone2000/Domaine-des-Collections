@@ -5,12 +5,17 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\UserEmailAddress;
 use App\Form\RegistrationFormType;
+use App\Mailer\Email;
+use App\Mailer\TemplatedEmail;
 use App\Security\UsernamePasswordAuthenticator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Guard\GuardAuthenticatorHandler;
@@ -50,7 +55,11 @@ class SecurityController extends AbstractController
     /**
      * @Route("/register", name="register")
      */
-    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, GuardAuthenticatorHandler $guardHandler, UsernamePasswordAuthenticator $authenticator): Response
+    public function register(Request $request,
+                             UserPasswordEncoderInterface $passwordEncoder,
+                             GuardAuthenticatorHandler $guardHandler,
+                             UsernamePasswordAuthenticator $authenticator,
+                             MailerInterface $mailer): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_homepage');
@@ -74,6 +83,17 @@ class SecurityController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);
             $entityManager->flush();
+
+            if (null !== $user->getEmailAddress()) {
+                $email = new TemplatedEmail();
+                $email
+                    ->to(new Address( $user->getEmailAddress()->getEmail(), $user->getUsername() ))
+                    ->subject('Domaine des Collections : Bienvenue '.$user->getUsername().' !')
+                    ->htmlTemplate('emails/welcome.html.twig')
+                    ->context(['user' => $user])
+                ;
+                $mailer->send($email);
+            }
 
             return $guardHandler->authenticateUserAndHandleSuccess(
                 $user,
