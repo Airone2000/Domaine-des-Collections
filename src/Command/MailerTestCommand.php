@@ -2,7 +2,10 @@
 
 namespace App\Command;
 
+use App\Entity\User;
 use App\Mailer\Email;
+use App\Mailer\TemplatedEmail;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,11 +21,16 @@ class MailerTestCommand extends Command
      * @var MailerInterface
      */
     private MailerInterface $mailer;
+    /**
+     * @var EntityManagerInterface
+     */
+    private EntityManagerInterface $entityManager;
 
-    public function __construct(MailerInterface $mailer)
+    public function __construct(MailerInterface $mailer, EntityManagerInterface $entityManager)
     {
         parent::__construct(self::$defaultName);
         $this->mailer = $mailer;
+        $this->entityManager = $entityManager;
     }
 
     protected function configure()
@@ -45,11 +53,15 @@ class MailerTestCommand extends Command
 
     private function sendSyncEmail()
     {
-        $email = new Email();
+        $user = $this->entityManager->getRepository(User::class)->findOneBy([
+            'username' => 'erwan'
+        ]);
+        $email = new TemplatedEmail();
         $email
             ->to('r.wan.guillou@gmail.com')
             ->subject('Adoccia\'s email test')
-            ->html('<p>coucou</p>')
+            ->htmlTemplate('emails/welcome.html.twig')
+            ->context(['user' => $user])
         ;
         $this->mailer->send($email);
     }

@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {% if justVerified %}
+        <h1>Votre adresse e-mail a été activée</h1>
+        <p>
+            Ainsi, nous allons pouvoir vous expédier des e-mails conformément à vos préférences
+            de notification.
+        </p>
+    {% else %}
+        <h1>Erreur</h1>
+        <p>
+            Cette adresse e-mail a déjà été activée le {{ email.verifiedAt|date('d/m/Y') }}.
+        </p>
+    {% endif %}
+
+    <div>
+        <a href="{{ url('app_homepage') }}">
+            <button>Retour à l'accueil</button>
+        </a>
+    </div>
+
+{% endblock %}

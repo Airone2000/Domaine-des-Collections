@@ -3,8 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserEmailAddress;
 use App\Form\RegistrationFormType;
 use App\Security\UsernamePasswordAuthenticator;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -82,6 +85,28 @@ class SecurityController extends AbstractController
 
         return $this->render('security/register.html.twig', [
             'registrationForm' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route(path="/activate-email/{id}/{verificationToken}", methods={"GET"}, name="activate_email")
+     * @ParamConverter(name="userEmailAddress", options={"mapping": {"id": "id", "verificationToken": "verificationToken"}})
+     */
+    public function activateEmail(UserEmailAddress $userEmailAddress): Response
+    {
+        $justVerified = false;
+        if (false === $userEmailAddress->isVerified()) {
+            $userEmailAddress
+                ->setVerified(true)
+                ->setVerifiedAt(new \DateTime())
+            ;
+            $this->getDoctrine()->getManager()->flush($userEmailAddress);
+            $justVerified = true;
+        }
+
+        return $this->render('security/activate-email.html.twig', [
+            'justVerified' => $justVerified,
+            'email' => $userEmailAddress
         ]);
     }
 }

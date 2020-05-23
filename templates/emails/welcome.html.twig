@@ -1,0 +1,45 @@
+{% apply inky_to_html|inline_css(source('@css/foundation-email.css')) %}
+
+    <spacer size="30"></spacer>
+
+    <container>
+        <row>
+            <columns>
+
+                <spacer size="15"></spacer>
+
+                <h1>Cher {{ user.username|capitalize }},</h1>
+                <spacer size="10"></spacer>
+                <p>
+                    Je suis profondément honoré que vous ayez choisi le <em>Domaine des Collections</em>
+                    pour gérer vos collections.
+                </p>
+
+                <p>
+                    Afin de me permettre de vous envoyer des e-mails (e.g. mot de passe oublié), je vous invite
+                    à cliquer sur le bouton suivant.
+                </p>
+
+                <spacer size="15"></spacer>
+                <center>
+                    {% set urlToActivateEmail = url('security_activate_email', {'id': user.emailAddress.id, 'verificationToken': user.emailAddress.verificationToken}) %}
+                    <button href="{{ urlToActivateEmail }}">Autoriser les e-mails</button>
+                </center>
+                <spacer size="15"></spacer>
+
+                <p>
+                    Sachez qu'à tout moment, depuis votre espace utilisateur, vous avez la possibilité de gérer
+                    finement vos préférences de notification.
+                </p>
+
+                <spacer size="30"></spacer>
+                <p>
+                    Pour vous servir, <strong>Merlin</strong>, gardien du <em>Domaine des Collections</em>.
+                </p>
+            </columns>
+        </row>
+    </container>
+
+    <spacer size="30"></spacer>
+
+{% endapply %}
