@@ -6,6 +6,10 @@
 
     <h1>Préférences de notification</h1>
 
+    {% for message in app.flashes('notificationPreferencesSuccess') %}
+        <p>{{ message }}</p>
+    {% endfor %}
+
     {% if email.email and email.verified == false %}
         <p>
             Cette adresse e-mail est en attente d'activation.

@@ -4,13 +4,18 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\UserEmailAddress;
+use App\Form\ChangePasswordType;
 use App\Form\UserEmailAddressType;
 use App\Form\UserProfileType;
+use App\Mailer\TemplatedEmail;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @Route(path="/my-account", name="myaccount_")
@@ -45,9 +50,8 @@ class MyAccountController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            /* @var UserEmailAddress $userEmailAddress */
-            $em->flush($userEmailAddress);
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('notificationPreferencesSuccess', 'Vos préférences de notification ont été modifiées.');
             return $this->redirectToRoute('myaccount_notification_preferences');
         }
 
@@ -68,9 +72,52 @@ class MyAccountController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('personalDataSuccess', 'Vos données personnelles ont été mises à jour.');
             return $this->redirectToRoute('myaccount_personal_data');
         }
         return $this->render('myaccount/personal-data.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route(path="/change-password", name="change_password")
+     */
+    public function changePassword(Request $request,
+                                   UserPasswordEncoderInterface $passwordEncoder,
+                                   MailerInterface $mailer): Response
+    {
+        $form = $this->createForm(ChangePasswordType::class, null, [
+            'proposeToReceiveNewPasswordByEmail' => true
+        ]);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            /* @var User $user */
+            $user = $this->getUser();
+            $user->setPassword(
+                $passwordEncoder->encodePassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash('changePasswordSuccess', 'Votre mot de passe a été mis à jour.');
+
+            if ($user->getEmailAddress()->isVerified() && $form->get('newPasswordByEmail')->getData()) {
+                $email = new TemplatedEmail();
+                $email
+                    ->to(new Address( $user->getEmailAddress()->getEmail(), $user->getUsername() ))
+                    ->subject('Domaine des Collections : Votre nouveau mot de passe')
+                    ->htmlTemplate('emails/new-password.html.twig')
+                    ->context(['newPassword' => $form->get('plainPassword')->getData()])
+                ;
+                $mailer->send($email);
+                $this->addFlash('changePasswordSuccess', 'Nous vous avons envoyé un e-mail contenant votre nouveau mot de passe.');
+            }
+
+            return $this->redirectToRoute('myaccount_change_password');
+        }
+        return $this->render('myaccount/change-password.html.twig', [
             'form' => $form->createView()
         ]);
     }

@@ -5,6 +5,11 @@
     {{ include('myaccount/_menu.html.twig') }}
 
     <h1>Données personnnelles</h1>
+
+    {% for message in app.flashes('personalDataSuccess') %}
+        <p>{{ message }}</p>
+    {% endfor %}
+
     {{ form_start(form) }}
         {{ form_row(form) }}
         <button type="submit">Enregistrer</button>
