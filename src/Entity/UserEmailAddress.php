@@ -11,7 +11,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserEmailAddressRepository::class)
- * @UniqueEntity(fields={"email"}, groups={"User:Register"})
+ * @ORM\EntityListeners("App\EntityListener\UserEmailAddressListener")
+ * @UniqueEntity(fields={"email"}, groups={"User:Register", "UserEmailAddress:Update"}, ignoreNull=true)
  */
 class UserEmailAddress
 {
@@ -32,8 +33,8 @@ class UserEmailAddress
 
     /**
      * @var string|null
-     * @ORM\Column(type="string", nullable=false, unique=true)
-     * @Assert\NotBlank(groups={"User:Register"})
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\Email(groups={"User:Register"})
      */
     private ?string $email = null;
 
@@ -55,9 +56,27 @@ class UserEmailAddress
      */
     private ?string $verificationToken;
 
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default"=0})
+     */
+    private bool $newsLetterAccepted = false;
+
+    /**
+     * @var array
+     * @ORM\Column(type="array")
+     */
+    private array $historyOfVerifiedEmailAddresses = [];
+
+    /**
+     * @var bool
+     * @ORM\Column(type="boolean", options={"default"=1})
+     */
+    private bool $historyOfVerifiedEmailAddressesKept = true;
+
     public function __construct()
     {
-        $this->verificationToken = Uuid::uuid4()->toString();
+        $this->renewVerificationToken();
     }
 
     public function getId()
@@ -154,5 +173,69 @@ class UserEmailAddress
         $this->verificationToken = $verificationToken;
         return $this;
     }
+
+    /**
+     * @return $this
+     */
+    public function renewVerificationToken(): UserEmailAddress
+    {
+        $this->verificationToken = Uuid::uuid4()->toString();
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNewsLetterAccepted(): bool
+    {
+        return $this->newsLetterAccepted;
+    }
+
+    /**
+     * @param bool $newsLetterAccepted
+     * @return UserEmailAddress
+     */
+    public function setNewsLetterAccepted(bool $newsLetterAccepted): UserEmailAddress
+    {
+        $this->newsLetterAccepted = $newsLetterAccepted;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHistoryOfVerifiedEmailAddresses(): array
+    {
+        return $this->historyOfVerifiedEmailAddresses;
+    }
+
+    /**
+     * @param array $historyOfVerifiedEmailAddresses
+     * @return UserEmailAddress
+     */
+    public function setHistoryOfVerifiedEmailAddresses(array $historyOfVerifiedEmailAddresses): UserEmailAddress
+    {
+        $this->historyOfVerifiedEmailAddresses = $historyOfVerifiedEmailAddresses;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHistoryOfVerifiedEmailAddressesKept(): bool
+    {
+        return $this->historyOfVerifiedEmailAddressesKept;
+    }
+
+    /**
+     * @param bool $historyOfVerifiedEmailAddressesKept
+     * @return UserEmailAddress
+     */
+    public function setHistoryOfVerifiedEmailAddressesKept(bool $historyOfVerifiedEmailAddressesKept): UserEmailAddress
+    {
+        $this->historyOfVerifiedEmailAddressesKept = $historyOfVerifiedEmailAddressesKept;
+        return $this;
+    }
+
 
 }

@@ -44,15 +44,6 @@ class RegistrationFormType extends AbstractType
                 'label' => false
             ])
         ;
-
-        // UserEmailAddressType returns an instance of UserEmailAddress due to configureOption > resolve > setDefault > data_class
-        // If UserEmailAddress::email is NULL, then do not save the object
-        $builder
-            ->get('emailAddress')->addModelTransformer(new CallbackTransformer(
-                fn(?UserEmailAddress $emailAddress) => $emailAddress,
-                fn(UserEmailAddress $emailAddress) => is_null($emailAddress->getEmail()) ? null : $emailAddress
-            ))
-        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

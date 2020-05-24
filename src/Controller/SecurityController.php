@@ -84,7 +84,7 @@ class SecurityController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            if (null !== $user->getEmailAddress()) {
+            if (null !== $user->getEmailAddress()->getEmail()) {
                 $email = new TemplatedEmail();
                 $email
                     ->to(new Address( $user->getEmailAddress()->getEmail(), $user->getUsername() ))
@@ -120,6 +120,12 @@ class SecurityController extends AbstractController
                 ->setVerified(true)
                 ->setVerifiedAt(new \DateTime())
             ;
+            # Keep history of verified email addresses based on user preferences
+            if ($userEmailAddress->isHistoryOfVerifiedEmailAddressesKept()) {
+                $historyOfVerifiedEmailAddresses = $userEmailAddress->getHistoryOfVerifiedEmailAddresses();
+                $historyOfVerifiedEmailAddresses[$userEmailAddress->getEmail()] = $userEmailAddress->getVerifiedAt();
+                $userEmailAddress->setHistoryOfVerifiedEmailAddresses($historyOfVerifiedEmailAddresses);
+            }
             $this->getDoctrine()->getManager()->flush($userEmailAddress);
             $justVerified = true;
         }

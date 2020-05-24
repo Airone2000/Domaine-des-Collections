@@ -1,0 +1,16 @@
+{% apply inky_to_html|inline_css(source('@css/foundation-email.css')) %}
+    <spacer size="30"></spacer>
+    <container>
+        <row>
+            <columns>
+                <spacer size="15"></spacer>
+                <h1>Cher {{ user.username|capitalize }},</h1>
+                <spacer size="10"></spacer>
+                {% block body %}{% endblock %}
+                <spacer size="30"></spacer>
+                {{ include('emails/_signature.html.twig') }}
+            </columns>
+        </row>
+    </container>
+    <spacer size="30"></spacer>
+{% endapply %}

@@ -1,0 +1,16 @@
+<p>
+    Afin de me permettre de vous envoyer des e-mails (e.g. mot de passe oublié), je vous invite
+    à cliquer sur le bouton suivant.
+</p>
+
+<spacer size="15"></spacer>
+<center>
+    {% set urlToActivateEmail = url('security_activate_email', {'id': user.emailAddress.id, 'verificationToken': user.emailAddress.verificationToken}) %}
+    <button href="{{ urlToActivateEmail }}">Autoriser les e-mails</button>
+</center>
+<spacer size="15"></spacer>
+
+<p>
+    Sachez qu'à tout moment, depuis votre espace utilisateur, vous avez la possibilité de gérer
+    finement vos préférences de notification.
+</p>
