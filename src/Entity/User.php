@@ -47,6 +47,17 @@ class User implements UserInterface
      */
     private ?string $password = null;
 
+    /**
+     * @var UserBirthdate
+     * @ORM\OneToOne(targetEntity="App\Entity\UserBirthdate", mappedBy="user", cascade={"persist", "remove"}, fetch="EAGER")
+     */
+    private UserBirthdate $birthdate;
+
+    public function __construct()
+    {
+        $this->setBirthdate(new UserBirthdate());
+    }
+
     public function getId()
     {
         return $this->id;
@@ -139,6 +150,28 @@ class User implements UserInterface
         }
 
         $this->emailAddress = $emailAddress;
+        return $this;
+    }
+
+    /**
+     * @return UserBirthdate
+     */
+    public function getBirthdate(): UserBirthdate
+    {
+        return $this->birthdate;
+    }
+
+    /**
+     * @param UserBirthdate $birthdate
+     * @return User
+     */
+    public function setBirthdate(UserBirthdate $birthdate): User
+    {
+        $birthdate
+            ->setUser($this)
+            ->setVisible(false)
+        ;
+        $this->birthdate = $birthdate;
         return $this;
     }
 

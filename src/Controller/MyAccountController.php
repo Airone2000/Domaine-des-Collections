@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\UserEmailAddress;
 use App\Form\UserEmailAddressType;
+use App\Form\UserProfileType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,6 +53,24 @@ class MyAccountController extends AbstractController
 
         return $this->render('myaccount/notification-preferences.html.twig', [
             'email' =>  $userEmailAddress,
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
+     * @Route(path="/personal-data", name="personal_data")
+     */
+    public function personalData(Request $request): Response
+    {
+        /* @var User $user */
+        $user = $this->getUser();
+        $form = $this->createForm(UserProfileType::class, $user);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+            return $this->redirectToRoute('myaccount_personal_data');
+        }
+        return $this->render('myaccount/personal-data.html.twig', [
             'form' => $form->createView()
         ]);
     }

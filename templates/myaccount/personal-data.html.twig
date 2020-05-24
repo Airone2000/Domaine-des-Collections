@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {{ include('myaccount/_menu.html.twig') }}
+
+    <h1>Données personnnelles</h1>
+    {{ form_start(form) }}
+        {{ form_row(form) }}
+        <button type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+
+    <p>
+        Apprenez dans <a href="#">les textes</a> pourquoi nous vous demandons des informations personnelles
+    </p>
+{% endblock %}
+

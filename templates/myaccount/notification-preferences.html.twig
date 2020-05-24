@@ -14,7 +14,14 @@
     {% endif %}
 
     {{ form_start(form) }}
-        {{ form_row(form) }}
+        {% for name, child in form.children %}
+            {{ form_row(child) }}
+            {% if name == 'historyOfVerifiedEmailAddressesKept' %}
+                <div>
+                    <a href="#"><small>En savoir plus</small></a>
+                </div>
+            {% endif %}
+        {% endfor %}
         <button type="submit">Modifier</button>
     {{ form_end(form) }}
 
