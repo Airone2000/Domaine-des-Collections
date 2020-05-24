@@ -53,9 +53,16 @@ class User implements UserInterface
      */
     private UserBirthdate $birthdate;
 
+    /**
+     * @var UserGender
+     * @ORM\OneToOne(targetEntity="App\Entity\UserGender", mappedBy="user", cascade={"persist", "remove"}, fetch="EAGER")
+     */
+    private $gender;
+
     public function __construct()
     {
         $this->setBirthdate(new UserBirthdate());
+        $this->setGender(new UserGender());
     }
 
     public function getId()
@@ -172,6 +179,28 @@ class User implements UserInterface
             ->setVisible(false)
         ;
         $this->birthdate = $birthdate;
+        return $this;
+    }
+
+    /**
+     * @return UserGender
+     */
+    public function getGender(): UserGender
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @param UserGender $gender
+     * @return User
+     */
+    public function setGender(UserGender $gender): User
+    {
+        $gender
+            ->setUser($this)
+            ->setVisible(false)
+        ;
+        $this->gender = $gender;
         return $this;
     }
 

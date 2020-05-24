@@ -11,7 +11,14 @@
     {% endfor %}
 
     {{ form_start(form) }}
-        {{ form_row(form) }}
+        {{ form_row(form.birthdate) }}
+        {% set age = app.user.birthdate.age %}
+        {% if age != null %}
+            ({{ age }} ans)
+        {% endif %}
+        <hr>
+        {{ form_row(form.gender) }}
+        <hr>
         <button type="submit">Enregistrer</button>
     {{ form_end(form) }}
 

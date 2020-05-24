@@ -87,13 +87,13 @@ class MyAccountController extends AbstractController
                                    UserPasswordEncoderInterface $passwordEncoder,
                                    MailerInterface $mailer): Response
     {
+        /* @var User $user */
+        $user = $this->getUser();
         $form = $this->createForm(ChangePasswordType::class, null, [
-            'proposeToReceiveNewPasswordByEmail' => true
+            'proposeToReceiveNewPasswordByEmail' => $user->getEmailAddress()->isVerified()
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            /* @var User $user */
-            $user = $this->getUser();
             $user->setPassword(
                 $passwordEncoder->encodePassword(
                     $user,

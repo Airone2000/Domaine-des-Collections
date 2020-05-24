@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\UserBirthdateRepository;
+use App\Repository\UserGenderRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=UserBirthdateRepository::class)
+ * @ORM\Entity(repositoryClass=UserGenderRepository::class)
  */
-class UserBirthdate
+class UserGender
 {
     /**
      * @ORM\Id()
@@ -20,16 +20,16 @@ class UserBirthdate
 
     /**
      * @var User
-     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="birthdate")
+     * @ORM\OneToOne(targetEntity="App\Entity\User", inversedBy="gender")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private User $user;
 
     /**
-     * @var null|\DateTime
-     * @ORM\Column(type="date", nullable=true)
+     * @var null|string
+     * @ORM\Column(type="string", length=1, nullable=true)
      */
-    private ?\DateTime $value;
+    private ?string $value;
 
     /**
      * @var bool
@@ -52,27 +52,27 @@ class UserBirthdate
 
     /**
      * @param User $user
-     * @return UserBirthdate
+     * @return UserGender
      */
-    public function setUser(User $user): UserBirthdate
+    public function setUser(User $user): UserGender
     {
         $this->user = $user;
         return $this;
     }
 
     /**
-     * @return \DateTime|null
+     * @return string|null
      */
-    public function getValue(): ?\DateTime
+    public function getValue(): ?string
     {
         return $this->value;
     }
 
     /**
-     * @param \DateTime|null $value
-     * @return UserBirthdate
+     * @param string|null $value
+     * @return UserGender
      */
-    public function setValue(?\DateTime $value): UserBirthdate
+    public function setValue(?string $value): UserGender
     {
         $this->value = $value;
         return $this;
@@ -88,27 +88,11 @@ class UserBirthdate
 
     /**
      * @param bool $visible
-     * @return UserBirthdate
+     * @return UserGender
      */
-    public function setVisible(bool $visible): UserBirthdate
+    public function setVisible(bool $visible): UserGender
     {
         $this->visible = $visible;
         return $this;
     }
-
-    /**
-     * @return int|null
-     */
-    public function getAge(): ?int
-    {
-        if (null !== $this->getValue()) {
-            $now = new \DateTime('today');
-            $birthdate = $this->getValue();
-            return $birthdate->diff($now)->y;
-        }
-
-        return null;
-    }
-
-
 }

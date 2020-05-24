@@ -2,26 +2,30 @@
 
 namespace App\Form;
 
-use App\Entity\User;
+use App\Entity\UserGender;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserProfileType extends AbstractType
+class UserGenderType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('birthdate', UserBirthdateType::class)
-            ->add('gender', UserGenderType::class)
+            ->add('value', ChoiceType::class, [
+                'choices' => ['f', 'm'],
+                'choice_label' => fn($v) => $v,
+                'required' => false
+            ])
+            ->add('visible')
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
-            'label' => false,
+            'data_class' => UserGender::class,
         ]);
     }
 }

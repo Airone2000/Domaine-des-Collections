@@ -13,7 +13,6 @@ class UserBirthdateType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $yearNow = (int)(new \DateTime())->format('Y');
         $builder
             ->add('value', BirthdayType::class, [
                 'format' => 'd/M/y',
