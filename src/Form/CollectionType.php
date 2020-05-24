@@ -2,30 +2,31 @@
 
 namespace App\Form;
 
-use App\Entity\UserGender;
+use App\Entity\Collection;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserGenderType extends AbstractType
+class CollectionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('value', ChoiceType::class, [
-                'choices' => [UserGender::F, UserGender::M],
-                'choice_label' => fn($v) => $v,
-                'required' => false
+            ->add('name', TextType::class, [
+                'required' => false,
             ])
-            ->add('visible')
+            ->add('private', CheckboxType::class, [
+                'required' => false,
+            ])
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => UserGender::class,
+            'data_class' => Collection::class,
         ]);
     }
 }

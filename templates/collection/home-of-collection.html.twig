@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Collection : {{ collection.name|default('Sans titre') }}</h1>
+    {% for message in app.flashes('createCollectionSuccess') %}
+        <p>Bienvenue dans votre nouvelle collection</p>
+    {% endfor %}
+{% endblock %}
+

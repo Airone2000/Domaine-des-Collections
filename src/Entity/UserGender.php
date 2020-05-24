@@ -10,6 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class UserGender
 {
+    const M = 'm';
+    const F = 'f';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="CUSTOM")
@@ -29,7 +32,7 @@ class UserGender
      * @var null|string
      * @ORM\Column(type="string", length=1, nullable=true)
      */
-    private ?string $value;
+    private ?string $value = null;
 
     /**
      * @var bool

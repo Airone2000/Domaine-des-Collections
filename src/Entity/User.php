@@ -57,7 +57,7 @@ class User implements UserInterface
      * @var UserGender
      * @ORM\OneToOne(targetEntity="App\Entity\UserGender", mappedBy="user", cascade={"persist", "remove"}, fetch="EAGER")
      */
-    private $gender;
+    private UserGender $gender;
 
     public function __construct()
     {

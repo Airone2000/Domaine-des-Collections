@@ -5,7 +5,7 @@
             <columns>
                 <spacer size="15"></spacer>
                 {% set user = (user is not defined) ? app.user : user %}
-                {% set dear = app.user.gender.value == 'f' ? 'Chère' : 'Cher' %}
+                {% set dear = user.gender.value == 'f' ? 'Chère' : 'Cher' %}
                 <h1>{{ dear}} {{ user.username|capitalize }},</h1>
                 <spacer size="10"></spacer>
                 {% block body %}{% endblock %}

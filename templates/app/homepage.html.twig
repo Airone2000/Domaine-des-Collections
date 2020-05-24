@@ -5,6 +5,11 @@
 {% block body %}
     <h1>Homepage</h1>
 
+    <a href="{{ url('collection_create') }}">
+        <button>Nouvelle collection</button>
+    </a>
+    <br><br>
+
     {% if app.user %}
         <a href="{{ url('myaccount_home') }}">
             <button>Gestion du compte</button>
