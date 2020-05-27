@@ -1,0 +1,28 @@
+{% apply inline_css %}
+    <style>
+        #thing-value-widgets {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    </style>
+
+    <div id="thing-form" data-thing="{{ thing.id }}">
+        <div>
+            <label for="thing_name">Nom de la chose</label>
+            <input type="text" data-object="thing" data-attr="name" data-event="input" value="{{ thing.name }}">
+        </div>
+
+        <hr>
+
+        <div id="thing-value-widgets" data-fitfor="{{ device }}">
+            {% for formComponent in collection.form.formComponents %}
+                {% set width = formComponent.size.getFor(device) %}
+                {% set position = formComponent.position.getFor(device) %}
+                <div class="thing-value" style="width:{{ width }}%; order:{{ position }};">
+                    {% set type = formComponent.widget.type|replace({'_':'-'}) %}
+                    {% include 'widgets/'~type~'.html.twig' with {'formComponent': formComponent, 'widget': formComponent.widget, 'getValueByFormComponent': getValueByFormComponent} %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endapply %}

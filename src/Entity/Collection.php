@@ -90,7 +90,7 @@ class Collection
         $formComponent->getPosition()->setFallback(2);
         $formComponent->getSize()->setFallback(50);
         $form->addFormComponent($formComponent);
-        $formComponent->getWidget()->setType(FormComponentWidget::TEXT);
+        $formComponent->getWidget()->setType(FormComponentWidget::LINE_OF_TEXT);
 
         // >> Third component (label)
         $formComponent = new FormComponent();
@@ -107,7 +107,7 @@ class Collection
         $formComponent->getPosition()->setFallback(4);
         $formComponent->getSize()->setFallback(50);
         $form->addFormComponent($formComponent);
-        $formComponent->getWidget()->setType(FormComponentWidget::TEXT);
+        $formComponent->getWidget()->setType(FormComponentWidget::LINE_OF_TEXT);
     }
 
     /**

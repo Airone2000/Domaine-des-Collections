@@ -102,14 +102,6 @@ class FormComponentSize
     }
 
     /**
-     * @return float|null
-     */
-    public function forSmartphone(): ?float
-    {
-        return $this->getSmartphone();
-    }
-
-    /**
      * @param float|null $smartphone
      * @return FormComponentSize
      */
@@ -125,14 +117,6 @@ class FormComponentSize
     public function getTablet(): ?float
     {
         return $this->tablet;
-    }
-
-    /**
-     * @return float|null
-     */
-    public function forTablet(): ?float
-    {
-        return $this->getTablet();
     }
 
     /**
@@ -154,14 +138,6 @@ class FormComponentSize
     }
 
     /**
-     * @return float|null
-     */
-    public function forDesktop(): ?float
-    {
-        return $this->getDesktop();
-    }
-
-    /**
      * @param float|null $desktop
      * @return FormComponentSize
      */
@@ -169,6 +145,11 @@ class FormComponentSize
     {
         $this->desktop = $desktop;
         return $this;
+    }
+
+    public function getFor(string $device): float
+    {
+        return call_user_func([$this, "get{$device}"]) ?? $this->getFallback();
     }
 
 }

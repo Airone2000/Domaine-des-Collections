@@ -12,7 +12,7 @@ class FormComponentWidget
 {
     const NONE = 'none';
     const LABEL = 'label';
-    const TEXT = 'text';
+    const LINE_OF_TEXT = 'line_of_text';
 
     /**
      * @ORM\Id()

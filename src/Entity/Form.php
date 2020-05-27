@@ -41,7 +41,7 @@ class Form
 
     /**
      * @var DoctrineCollection
-     * @ORM\OneToMany(targetEntity="App\Entity\FormComponent", mappedBy="form", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\FormComponent", mappedBy="form", cascade={"persist", "remove"}, fetch="EAGER")
      */
     private $formComponents;
 

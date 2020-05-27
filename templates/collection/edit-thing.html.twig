@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Edit thing</h1>
+    {% for message in app.flashes('insertThingSuccess') %}
+        <p>{{ message }}</p>
+    {% endfor %}
+    {% include 'collection/thing-form.html.twig' with {'collection': collection, 'thing': thing, 'device': device, 'getValueByFormComponent': getValueByFormComponent} %}
+{% endblock %}
+

@@ -33,19 +33,19 @@ class FormComponent
 
     /**
      * @var FormComponentSize
-     * @ORM\OneToOne(targetEntity="App\Entity\FormComponentSize", mappedBy="formComponent", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\FormComponentSize", mappedBy="formComponent", cascade={"persist", "remove"}, fetch="EAGER")
      */
     private FormComponentSize $size;
 
     /**
      * @var FormComponentPosition
-     * @ORM\OneToOne(targetEntity="App\Entity\FormComponentPosition", mappedBy="formComponent", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\FormComponentPosition", mappedBy="formComponent", cascade={"persist", "remove"}, fetch="EAGER")
      */
     private FormComponentPosition $position;
 
     /**
      * @var FormComponentWidget
-     * @ORM\OneToOne(targetEntity="App\Entity\FormComponentWidget", mappedBy="formComponent", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\FormComponentWidget", mappedBy="formComponent", cascade={"persist", "remove"}, fetch="EAGER")
      */
     private FormComponentWidget $widget;
 

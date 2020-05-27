@@ -102,14 +102,6 @@ class FormComponentPosition
     }
 
     /**
-     * @return int|null
-     */
-    public function forSmartphone(): ?int
-    {
-        return $this->getSmartphone();
-    }
-
-    /**
      * @param int|null $smartphone
      * @return FormComponentPosition
      */
@@ -125,14 +117,6 @@ class FormComponentPosition
     public function getTablet(): ?int
     {
         return $this->tablet;
-    }
-
-    /**
-     * @return int|null
-     */
-    public function forTablet(): ?int
-    {
-        return $this->getTablet();
     }
 
     /**
@@ -154,14 +138,6 @@ class FormComponentPosition
     }
 
     /**
-     * @return int|null
-     */
-    public function forDesktop(): ?int
-    {
-        return $this->getDesktop();
-    }
-
-    /**
      * @param int|null $desktop
      * @return FormComponentPosition
      */
@@ -169,6 +145,11 @@ class FormComponentPosition
     {
         $this->desktop = $desktop;
         return $this;
+    }
+
+    public function getFor(string $device): int
+    {
+        return call_user_func([$this, "get{$device}"]) ?? $this->getFallback();
     }
 
 }

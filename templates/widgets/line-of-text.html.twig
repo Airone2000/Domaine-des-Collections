@@ -1,0 +1,11 @@
+{% set formComponentID = formComponent.id.toString() %}
+{% set value = getValueByFormComponent[formComponentID]|default(null) %}
+
+<input
+    type="text"
+    class="widget widget-line-of-text"
+    data-object="value"
+    data-event="input"
+    data-attr="{{ formComponentID }}"
+    value="{{ value }}"
+>
