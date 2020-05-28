@@ -7,19 +7,19 @@ use App\Entity\FormComponent;
 use App\Entity\Thing;
 use App\Entity\Value;
 use App\Enum\Device;
+use App\Enum\PublicationStatus;
 use App\Form\CollectionType;
 use App\Form\ThingType;
 use App\Repository\ValueRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * @Route(path="/collections", name="collection_")
@@ -84,15 +84,26 @@ class CollectionController extends AbstractController
     }
 
     /**
-     * @Route("/{collectionId}/{thingId}", name="edit_thing")
+     * @Route("/{collectionId}/{thingId}/edit", name="edit_thing")
      * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
      * @Entity(name="collection", expr="repository.find(collectionId)")
      * @Entity(name="thing", expr="repository.findOneBy({'id':thingId, 'collection':collectionId})")
      */
     public function editThing(Collection $collection, Thing $thing, Request $request, ValueRepository $valueRepository): Response
     {
+        // Set to draft so that the user is free to make any changes on values
+        // without causing weird side effects.
+        // Maybe I should display a warning before editing : beware, this thing
+        // is about to be turned into a draft and won't be available until you
+        // republish it. Are you sure you want to continue ?
+        // Here I reset to DRAFT because clicking the back button in the browser after a redirect
+        // serves the page from cache and thus the thing remains PUBLISHED instead of being DRAFT.
+        $thing->setPublicationStatus(PublicationStatus::DRAFT);
+        $this->getDoctrine()->getManager()->flush();
+
         if ($request->isXmlHttpRequest() && $request->isMethod('PUT')) {
 
+            $response = new JsonResponse();
             $em = $this->getDoctrine()->getManager();
 
             // Payload
@@ -108,7 +119,10 @@ class CollectionController extends AbstractController
                     $form->submit($requestData['data'], true);
                     if ($form->isValid()) {
                         $em->flush();
-                        return new JsonResponse([]); // Okay
+                        return $response;
+                    } else {
+                        $response->setStatusCode(Response::HTTP_BAD_REQUEST);
+                        return $response;
                     }
                     break;
                 case 'value':
@@ -123,11 +137,13 @@ class CollectionController extends AbstractController
                             ->setValue($valueValue)
                         ;
 
-                        if ($value->isValid()) {
+                        if ($value->isValid($violations)) {
                             $valueRepository->deleteByThingAndFormComponent($thing, $formComponent);
                             $em->persist($value);
                             $em->flush();;
-                            return new JsonResponse([]); // Okay
+                            return $response; // Okay
+                        } else {
+                            return $response->setData($violations)->setStatusCode(Response::HTTP_BAD_REQUEST);
                         }
                     }
                     break;
@@ -139,7 +155,7 @@ class CollectionController extends AbstractController
         $getValueByFormComponent = [];
         /* @var Value $value */
         foreach ($thing->getValues() as $value) {
-            $getValueByFormComponent[(string) $value->getFormComponent()->getId()] = $value->getValue();
+            $getValueByFormComponent[(string) $value->getFormComponent()->getId()] = $value;
         }
 
         return $this->render('collection/edit-thing.html.twig', [
@@ -147,6 +163,57 @@ class CollectionController extends AbstractController
             'thing' => $thing,
             'device' => Device::DESKTOP,
             'getValueByFormComponent' => $getValueByFormComponent,
+        ]);
+    }
+
+    /**
+     * @Route("/{collectionId}/{thingId}/toggle-publish", name="toggle_publish_thing", condition="request.isXmlHttpRequest()")
+     * @IsGranted("IS_AUTHENTICATED_REMEMBERED")
+     * @Entity(name="collection", expr="repository.find(collectionId)")
+     * @Entity(name="thing", expr="repository.findOneBy({'id':thingId, 'collection':collectionId})")
+     */
+    public function togglePublishThing(Collection $collection, Thing $thing, Request $request): JsonResponse
+    {
+        $response = new JsonResponse(null, Response::HTTP_OK);
+        $withRedirectLink = true;
+
+        if ($thing->getPublicationStatus() !== PublicationStatus::PUBLISHED) {
+            if ($thing->isValid(false, $violations)) {
+                $thing->setPublicationStatus(PublicationStatus::PUBLISHED);
+            } else {
+                $response->setStatusCode(Response::HTTP_FORBIDDEN);
+                $responseData['violations'] = $violations;
+                $withRedirectLink = false;
+            }
+        } else {
+            $thing->setPublicationStatus(PublicationStatus::OFFLINE);
+        }
+
+        // save new publication status
+        $this->getDoctrine()->getManager()->flush();
+
+        // Return some data
+        $responseData['publicationStatus'] = $thing->getPublicationStatus();
+        if ($withRedirectLink) {
+            $responseData['redirectTo'] = $this->generateUrl('collection_show_thing', [
+                'collectionId' => $collection->getId(),
+                'thingId' => $thing->getId(),
+            ], UrlGeneratorInterface::ABSOLUTE_URL);
+        }
+        $response->setData($responseData);
+        return $response;
+    }
+
+    /**
+     * @Route("/{collectionId}/{thingId}", name="show_thing")
+     * @Entity(name="collection", expr="repository.find(collectionId)")
+     * @Entity(name="thing", expr="repository.findOneBy({'id':thingId, 'collection':collectionId})")
+     */
+    public function showThing(Collection $collection, Thing $thing): Response
+    {
+        return $this->render('collection/show-thing.html.twig', [
+            'collection' => $collection,
+            'thing' => $thing,
         ]);
     }
 }

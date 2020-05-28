@@ -1,3 +1,7 @@
-body {
-    background-color: lightgray;
+.hidden {
+    display: none;
+}
+
+.form-component.invalid {
+    background-color: red;
 }

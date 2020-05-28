@@ -14,6 +14,10 @@ class FormComponentWidget
     const LABEL = 'label';
     const LINE_OF_TEXT = 'line_of_text';
 
+    const REQUIRED_CONSTRAINT = 'required';
+    const MIN_LENGTH_CONSTRAINT = 'minLength';
+
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue(strategy="CUSTOM")

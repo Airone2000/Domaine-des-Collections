@@ -139,17 +139,30 @@ class Value
         return $this;
     }
 
-    public function isValid(): bool
+    /**
+     * @param array $violations
+     * @return bool
+     */
+    public function isValid(?array &$violations = []): bool
     {
         $this->requiresFormComponent();
-
+        $widget = $this->formComponent->getWidget();
+        $widgetOptions = $widget->getOptions() ?? [];
         switch ($this->formComponent->getWidget()->getType()) {
             case FormComponentWidget::LINE_OF_TEXT:
-                return true;
+                $value = $this->getLineOfTextValue();
+                if (isset($widgetOptions[$widget::REQUIRED_CONSTRAINT])) {
+                    $isRequired = $widget::REQUIRED_CONSTRAINT;
+                    if ($isRequired && (null === $value || mb_strlen(trim((string) $value)) === 0)) {
+                        $violations[] = [
+                            'constraint' => $widget::REQUIRED_CONSTRAINT,
+                            'message' => 'This value is required'
+                        ];
+                    }
+                }
                 break;
-            default:
-                return false;
         }
+        return empty($violations);
     }
 
 }

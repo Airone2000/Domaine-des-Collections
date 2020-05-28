@@ -1,5 +1,5 @@
 {% set formComponentID = formComponent.id.toString() %}
-{% set value = getValueByFormComponent[formComponentID]|default(null) %}
+{% set valueValue = value ? value.value : null %}
 
 <input
     type="text"
@@ -7,5 +7,5 @@
     data-object="value"
     data-event="input"
     data-attr="{{ formComponentID }}"
-    value="{{ value }}"
+    value="{{ valueValue }}"
 >

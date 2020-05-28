@@ -75,39 +75,27 @@ class Collection
         $form->setValid(true);
         $this->setForm($form);
 
-        // >> First component (label)
-        $formComponent = new FormComponent();
-        $formComponent->getPosition()->setFallback(1);
-        $formComponent->getSize()->setFallback(50);
-        $form->addFormComponent($formComponent);
-        $formComponent->getWidget()
-            ->setType(FormComponentWidget::LABEL)
-            ->addOption('label', 'Champ 1')
-        ;
-
-        // >> Second component (text input)
-        $formComponent = new FormComponent();
-        $formComponent->getPosition()->setFallback(2);
-        $formComponent->getSize()->setFallback(50);
-        $form->addFormComponent($formComponent);
-        $formComponent->getWidget()->setType(FormComponentWidget::LINE_OF_TEXT);
-
-        // >> Third component (label)
-        $formComponent = new FormComponent();
-        $formComponent->getPosition()->setFallback(3);
-        $formComponent->getSize()->setFallback(50);
-        $form->addFormComponent($formComponent);
-        $formComponent->getWidget()
-            ->setType(FormComponentWidget::LABEL)
-            ->addOption('label', 'Champ 2')
-        ;
-
-        // >> Fourth component (text input)
-        $formComponent = new FormComponent();
-        $formComponent->getPosition()->setFallback(4);
-        $formComponent->getSize()->setFallback(50);
-        $form->addFormComponent($formComponent);
-        $formComponent->getWidget()->setType(FormComponentWidget::LINE_OF_TEXT);
+        for($i = 0; $i < 6; $i++) {
+            $mod = $i%2;
+            if ($mod === 0) {
+                // label
+                $formComponent = new FormComponent();
+                $formComponent->getPosition()->setFallback($i);
+                $formComponent->getSize()->setFallback(50);
+                $form->addFormComponent($formComponent);
+                $formComponent->getWidget()
+                    ->setType(FormComponentWidget::LABEL)
+                    ->addOption('label', 'Champ')
+                ;
+            } else {
+                // input line of text
+                $formComponent = new FormComponent();
+                $formComponent->getPosition()->setFallback($i);
+                $formComponent->getSize()->setFallback(50);
+                $form->addFormComponent($formComponent);
+                $formComponent->getWidget()->setType(FormComponentWidget::LINE_OF_TEXT);
+            }
+        }
     }
 
     /**

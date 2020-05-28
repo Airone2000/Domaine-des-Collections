@@ -1,6 +1,6 @@
 {% apply inline_css %}
     <style>
-        #thing-value-widgets {
+        #form-components {
             display: flex;
             flex-wrap: wrap;
         }
@@ -14,15 +14,25 @@
 
         <hr>
 
-        <div id="thing-value-widgets" data-fitfor="{{ device }}">
+        <div id="form-components" data-fitfor="{{ device }}">
             {% for formComponent in collection.form.formComponents %}
                 {% set width = formComponent.size.getFor(device) %}
                 {% set position = formComponent.position.getFor(device) %}
-                <div class="thing-value" style="width:{{ width }}%; order:{{ position }};">
+                {% set value = getValueByFormComponent[formComponent.id.toString()]|default(null) %}
+                <div id="{{ formComponent.id }}" class="form-component {{ value and not value.valid ? 'invalid' : '' }}" style="width:{{ width }}%; order:{{ position }};">
                     {% set type = formComponent.widget.type|replace({'_':'-'}) %}
-                    {% include 'widgets/'~type~'.html.twig' with {'formComponent': formComponent, 'widget': formComponent.widget, 'getValueByFormComponent': getValueByFormComponent} %}
+                    {% include 'widgets/'~type~'.html.twig' with {'formComponent': formComponent, 'widget': formComponent.widget, 'value': value} %}
+                    <ul class="thing-errors">
+
+                    </ul>
                 </div>
             {% endfor %}
+        </div>
+
+        <button id="publish-object" disabled>Publish</button>
+
+        <div id="syncing-loader" class="hidden">
+            <p>Sauvegarde en cours ...</p>
         </div>
     </div>
 {% endapply %}
